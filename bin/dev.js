@@ -1,4 +1,3 @@
-import React from 'react';
 import Express from 'express';
 import webpack from 'webpack';
 import WebpackDevServer from 'webpack-dev-server';
@@ -13,7 +12,6 @@ let app = new Express();
 app.set('view engine', 'ejs');
 app.use(Express.static(path.join(__dirname, '../public')));
 
-
 app.get('*', (req, res) => {
   res.render('index', {
     html: '',
@@ -25,13 +23,14 @@ app.get('*', (req, res) => {
     },
     reduxState: undefined,
     style: `http://localhost:${WEBPACK_DEV_SERVER_PORT}/style.css`,
-    bundle: `http://localhost:${WEBPACK_DEV_SERVER_PORT}/bundle.js`
+    bundle: `http://localhost:${WEBPACK_DEV_SERVER_PORT}/bundle.js`,
+    common: `http://localhost:${WEBPACK_DEV_SERVER_PORT}/common.js`
   });
 });
 
 var server = new WebpackDevServer(webpack(config), {
   contentBase: path.join(__dirname, '..', 'public'),
-  hot: true,
+  hot: false,
   quiet: false,
   noInfo: false,
   publicPath: '/',
@@ -39,9 +38,13 @@ var server = new WebpackDevServer(webpack(config), {
 });
 
 server.listen(WEBPACK_DEV_SERVER_PORT, 'localhost', () => {
-  console.log(`${colors.yellow('WebpackDevServer')} is running on ${colors.underline(`http://localhost:${WEBPACK_DEV_SERVER_PORT}`)}`);
+  console.log(
+    `${colors.yellow('WebpackDevServer')} is running on ${colors.underline(`http://localhost:${WEBPACK_DEV_SERVER_PORT}`)}`
+  );
 });
 
 app.listen(PORT, () => {
-  console.log(`${colors.green('WebApp')} is running on ${colors.underline(`http://localhost:${PORT}`)}`);
+  console.log(
+    `${colors.green('WebApp')} is running on ${colors.underline(`http://localhost:${PORT}`)}`
+  );
 });

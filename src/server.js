@@ -11,18 +11,18 @@ import Helmet from 'react-helmet';
 import cookieParser from 'cookie-parser';
 
 import { match, RouterContext } from 'react-router';
+import createHistory from 'history/lib/createMemoryHistory';
 
 import { addLocaleData } from 'react-intl';
 import cs from 'react-intl/locale-data/cs';
 
 import { Provider } from 'react-redux';
 import { syncHistoryWithStore } from 'react-router-redux';
-import createHistory from 'react-router/lib/createMemoryHistory';
 import { configureStore } from './redux/store';
 import { loggedInUserIdSelector } from './redux/selectors/auth';
-import createRoutes from './pages/routes';
+import createRoutes from './routes/server';
 
-addLocaleData([ ...cs ]);
+addLocaleData([...cs]);
 
 /**
  * Init server-side rendering of the app using Express with
@@ -49,6 +49,7 @@ const renderPage = (res, store, renderProps) => {
     head,
     reduxState: serialize(store.getState(), { isJSON: true }),
     bundle,
+    common: '/common.js',
     style: '/style.css'
   });
 };
@@ -61,28 +62,36 @@ app.get('*', (req, res) => {
   const history = syncHistoryWithStore(memoryHistory, store);
   const location = req.originalUrl;
 
-  match({ history, routes: createRoutes(store.getState), location }, (error, redirectLocation, renderProps) => {
-    if (redirectLocation) {
-      res.redirect(301, redirectLocation.pathname + redirectLocation.search);
-    } else if (error) {
-      // @todo use the 500.ejs view
-      res.status(500).send(error.message);
-    } else if (renderProps == null) {
-      // this should never happen but just for sure - if router failed
-      res.status(404).send('Not found');
-    } else {
-      const userId = loggedInUserIdSelector(store.getState()); // try to get the user ID from the token (if any)
-      const loadAsync = renderProps.components
-        .filter(component => component && component.WrappedComponent && component.WrappedComponent.loadAsync)
-        .map(component => component.WrappedComponent.loadAsync)
-        .map(load => load(renderProps.params, store.dispatch, userId));
+  match(
+    { history, routes: createRoutes(store.getState), location },
+    (error, redirectLocation, renderProps) => {
+      if (redirectLocation) {
+        res.redirect(301, redirectLocation.pathname + redirectLocation.search);
+      } else if (error) {
+        // @todo use the 500.ejs view
+        res.status(500).send(error.message);
+      } else if (renderProps == null) {
+        // this should never happen but just for sure - if router failed
+        res.status(404).send('Not found');
+      } else {
+        const userId = loggedInUserIdSelector(store.getState()); // try to get the user ID from the token (if any)
+        const loadAsync = renderProps.components
+          .filter(
+            component =>
+              component &&
+              component.WrappedComponent &&
+              component.WrappedComponent.loadAsync
+          )
+          .map(component => component.WrappedComponent.loadAsync)
+          .map(load => load(renderProps.params, store.dispatch, userId));
 
-      const oldStore = Object.assign({}, store);
-      Promise.all(loadAsync)
-        .then(() => renderPage(res, store, renderProps))
-        .catch(() => renderPage(res, oldStore, renderProps));
+        const oldStore = Object.assign({}, store);
+        Promise.all(loadAsync)
+          .then(() => renderPage(res, store, renderProps))
+          .catch(() => renderPage(res, oldStore, renderProps));
+      }
     }
-  });
+  );
 });
 
 const port = process.env.PORT || 8080;

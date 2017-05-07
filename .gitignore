@@ -5,8 +5,9 @@ public/bundle.js
 public/bundle.js.map
 public/
 bin/*.jpg
-bin/server.js
-bin/server.js.map
+bin/*.js
+bin/*.js.map
+!bin/dev.js
 tmp
 build
 npm-debug.log
