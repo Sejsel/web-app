@@ -1,10 +1,18 @@
 {
-  "presets": ["es2015", "react", "stage-1"],
+  "presets": [
+    "es2015",
+    "react",
+    "stage-1"
+  ],
   "plugins": [
-    ["react-intl", {
+    [
+      "react-intl",
+      {
         "messagesDir": "./tmp/messages/",
         "enforceDescriptions": false
-    }],
+      }
+    ],
+    "syntax-dynamic-import",
     "transform-object-assign",
     "transform-flow-strip-types"
   ]
