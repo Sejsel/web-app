@@ -16,11 +16,14 @@ const extractCss = new ExtractTextPlugin('style.css');
 
 module.exports = {
   devtool: process.env.NODE_ENV === 'development' ? 'source-map' : 'none',
-  entry: path.join(__dirname, '..', 'src/client.js'),
+  entry: {
+    bundle: path.join(__dirname, '..', 'src/client.js')
+  },
   output: {
-    filename: 'bundle.js',
+    filename: '[name].js',
     path: path.join(__dirname, '..', 'public'),
-    publicPath: '/public/'
+    publicPath: 'http://localhost:8081/',
+    chunkFilename: 'chunk.[id].[chunkhash:8].js'
   },
   resolve: {
     alias: {
@@ -52,6 +55,10 @@ module.exports = {
         NODE_ENV: '\'' + process.env.NODE_ENV + '\'',
         API_BASE: '\'' + process.env.API_BASE + '\''
       }
+    }),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'commons',
+      filename: 'common.js'
     })
   ]
 };
