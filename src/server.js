@@ -29,7 +29,7 @@ addLocaleData([...cs]);
  * some basic middleware for tempaltes and static file serving.
  */
 
-const bundle = process.env.BUNDLE || '/bundle.js';
+const bundle = process.env.BUNDLE || '/recodex.js';
 
 let app = new Express();
 app.set('view engine', 'ejs');
@@ -49,7 +49,7 @@ const renderPage = (res, store, renderProps) => {
     head,
     reduxState: serialize(store.getState(), { isJSON: true }),
     bundle,
-    common: '/common.js',
+    vendor: '/vendor.js',
     style: '/style.css'
   });
 };

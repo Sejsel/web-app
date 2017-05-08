@@ -130,6 +130,7 @@
     "strip-loader": "^0.1.2",
     "style-loader": "^0.13.1",
     "webpack": "^2.5.1",
+    "webpack-bundle-analyzer": "^2.6.0",
     "webpack-dev-middleware": "^1.10.2",
     "webpack-dev-server": "^2.4.5",
     "webpack-isomorphic-tools": "^2.2.50"

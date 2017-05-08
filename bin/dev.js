@@ -23,17 +23,17 @@ app.get('*', (req, res) => {
     },
     reduxState: undefined,
     style: `http://localhost:${WEBPACK_DEV_SERVER_PORT}/style.css`,
-    bundle: `http://localhost:${WEBPACK_DEV_SERVER_PORT}/bundle.js`,
-    common: `http://localhost:${WEBPACK_DEV_SERVER_PORT}/common.js`
+    bundle: `http://localhost:${WEBPACK_DEV_SERVER_PORT}/recodex.js`,
+    vendor: `http://localhost:${WEBPACK_DEV_SERVER_PORT}/vendor.js`
   });
 });
 
 var server = new WebpackDevServer(webpack(config), {
   contentBase: path.join(__dirname, '..', 'public'),
+  publicPath: 'http://localhost:8081/',
   hot: false,
   quiet: false,
   noInfo: false,
-  publicPath: '/',
   stats: { colors: true }
 });
 
