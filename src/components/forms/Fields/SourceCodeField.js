@@ -1,48 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import { canUseDOM } from 'exenv';
-import ClientOnly from '../../helpers/ClientOnly';
 
-import { FormGroup, ControlLabel, HelpBlock } from 'react-bootstrap';
-
-// load the ACE editor only when rendering in the browser
-let AceEditor = null;
-if (canUseDOM) {
-  AceEditor = require('react-ace').default;
-  require('brace/theme/monokai');
-  require('brace/theme/github');
-  require('brace/mode/c_cpp');
-  require('brace/mode/java');
-  require('brace/mode/csharp');
-  require('brace/keybinding/vim');
-}
-
-const getMode = ext => {
-  switch (ext) {
-    case 'java':
-      return 'java';
-
-    case 'cs':
-      return 'csharp';
-
-    case 'c':
-    case 'cpp':
-    case 'h':
-    case 'hpp':
-      return 'c_cpp';
-
-    case 'md':
-    case 'markdown':
-      return 'markdown';
-
-    case '':
-      return 'makefile';
-
-    default:
-      return 'c_cpp';
-  }
-};
+import TextAreaField from './TextAreaField';
 
 const SourceCodeField = (
   {
@@ -51,33 +11,19 @@ const SourceCodeField = (
     meta: { touched, error },
     type = 'text',
     label,
-    children,
     tabIndex,
     ...props
   },
   { userSettings: { vimMode = false, darkTheme = false } }
-) => (
-  <FormGroup
-    controlId={input.name}
-    validationState={touched && error ? 'error' : undefined}
-  >
-    <ControlLabel>{label}</ControlLabel>
-    <ClientOnly>
-      <AceEditor
-        {...input}
-        mode={getMode(mode)}
-        theme={darkTheme ? 'monokai' : 'github'}
-        name={input.name}
-        tabIndex={tabIndex}
-        keyboardHandler={vimMode ? 'vim' : undefined}
-        width="100%"
-        editorProps={{ $blockScrolling: true }}
-      />
-    </ClientOnly>
-    {touched && error && <HelpBlock>{error}</HelpBlock>}
-    {children}
-  </FormGroup>
-);
+) =>
+  <TextAreaField
+    {...input}
+    meta={{ touched, error }}
+    type={type}
+    label={label}
+    tabIndex={tabIndex}
+    {...props}
+  />;
 
 SourceCodeField.propTypes = {
   input: PropTypes.shape({
